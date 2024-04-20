@@ -1,32 +1,30 @@
-import { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const SignUp = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const handleLogin = () => {
+  const [userType, setUserType] = useState("");
+  const handleSignUp = () => {
     console.log(userName, password);
-    const data = { name: userName, password: password };
+    const data = { name: userName, password: password, type: userType };
     axios
-      .post("http://localhost:3001/login", data)
+      .post("http://localhost:3001/signUp", data)
       .then((res) => {
         console.log(res.data.token);
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-          localStorage.setItem("userId", res.data.userId);
-          navigate("/get/products");
+        if (res.data.code == 200) {
+          navigate("/login");
         }
       })
-
       .catch((err) => {
         console.log(err);
       });
   };
   return (
     <div>
-      <h1>Login Page</h1>
+      <h1>SignUp Page</h1>
       <div>
         UserName:{" "}
         <input
@@ -39,7 +37,6 @@ const Login = () => {
       </div>{" "}
       <br />
       <div>
-        {" "}
         Password:{" "}
         <input
           type="text"
@@ -48,13 +45,24 @@ const Login = () => {
             setPassword(e.target.value);
           }}
         />
-      </div>{" "}
+      </div>
       <br />
       <div>
-        <button onClick={handleLogin}>SUBMIT</button>
+        User Type:
+        <input
+          type="text"
+          value={userType}
+          onChange={(e) => {
+            setUserType(e.target.value);
+          }}
+        />
+      </div>{" "}
+      <br /> <br />
+      <div>
+        <button onClick={handleSignUp}>SUBMIT</button>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default SignUp;

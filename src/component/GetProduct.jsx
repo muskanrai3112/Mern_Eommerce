@@ -1,47 +1,70 @@
 import axios from "axios";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Home from "./Home";
 
-const AddProduct = () => {
+const GetProduct = () => {
   const navigate = useNavigate();
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [seller, setSeller] = useState("");
   const [price, setPrice] = useState("");
-  
 
   const handleOnsubmit = (event) => {
     event.preventDefault();
-    console.log({
-      image: image,
-      name: name,
-      category: category,
-      seller: seller,
-      price: price,
-    });
+
+    console.log(
+      {
+        id: params.id,
+        url: image,
+        name: name,
+        category: category,
+        seller: seller,
+        price: price,
+      },
+      "heelo data"
+    );
     const data = {
+      id: params.id,
       url: image,
       name: name,
       category: category,
       seller: seller,
       price: price,
     };
-    
     axios
-      .post("http://localhost:3001/add-product", data)
+      .post("http://localhost:3001/edit-products", data)
       .then((res) => {
-        console.log(res);
-        if (res.data == "saved") {
+        console.log(res.data, "ressss");
+        if (res.data.code == 200) {
           navigate("/get/products");
         }
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((error) => console.log(error, "errorrr"));
   };
+
+  const params = useParams();
+  console.log(params, "hhhh");
+  useEffect(() => {
+    const id = params.id;
+    axios
+      .get(`http://localhost:3001/getProductById/${id}`)
+      .then((res) => {
+        console.log(res.data.data, "12");
+        setImage(res.data.data.url);
+        setName(res.data.data.name);
+        setCategory(res.data.data.category);
+        setSeller(res.data.data.seller);
+        setPrice(res.data.data.price);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   return (
     <div>
+      <div>
+        <Home />
+      </div>
       <form onSubmit={handleOnsubmit}>
         Image:{" "}
         <input
@@ -94,4 +117,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default GetProduct;
